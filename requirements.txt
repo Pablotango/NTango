@@ -1,4 +1,6 @@
 pandas
 streamlit
-plotly.express
-plotly
+datetime
+requests
+base64
+io
