@@ -5,17 +5,17 @@ from google.cloud import firestore
 import json
 import tempfile
 
-# Replace escaped newline characters in the private key
+# Read the credentials JSON from Streamlit secrets
+credentials_json = json.loads(st.secrets["google"]["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
+
+# Fix escaped newlines in private_key field
 credentials_json["private_key"] = credentials_json["private_key"].replace("\\n", "\n")
 
-# Read the credentials JSON from Streamlit secrets
-credentials_json = st.secrets["GOOGLE_APPLICATION_CREDENTIALS_JSON"]
-
-# Create a temporary file to store the modified credentials JSON
-with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
-    json.dump(credentials_json, temp_file, indent=4)  # Save the JSON to the temporary file
+# Create a temporary file to store the credentials JSON
+with tempfile.NamedTemporaryFile(delete=False, suffix=".json", mode="w") as temp_file:
+    json.dump(credentials_json, temp_file, indent=4)  # Save the JSON to the file
     temp_credentials_path = temp_file.name
-    
+
 # Set the GOOGLE_APPLICATION_CREDENTIALS environment variable
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
 
