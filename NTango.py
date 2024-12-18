@@ -2,11 +2,29 @@ import os
 import streamlit as st
 import datetime
 from google.cloud import firestore
+import json
+import tempfile
 
-# Set Google credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:/Pablo_offline/py/NTango/ntangp-membership-48fb61f72bd5.json"
+# Read the credentials JSON from Streamlit secrets
+credentials_json = st.secrets["GOOGLE_APPLICATION_CREDENTIALS_JSON"]
 
-# Initialize Firestore client (explicitly set project ID)
+# Fix escaped newlines in private_key field
+credentials_json["private_key"] = credentials_json["private_key"].replace("\\n", "\n")
+
+# Create a temporary file to store the credentials JSON
+with tempfile.NamedTemporaryFile(delete=False, suffix=".json", mode="w") as temp_file:
+    json.dump(credentials_json, temp_file, indent=4)  # Save the JSON to the file
+    temp_credentials_path = temp_file.name
+
+# # Debug: Read back the temporary file
+# with open(temp_credentials_path, "r") as debug_file:
+#     st.write("Debug: Temporary Credentials File Content")
+#     st.text(debug_file.read())
+
+# Set the GOOGLE_APPLICATION_CREDENTIALS environment variable
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
+
+# Initialize Firestore client
 db = firestore.Client(database="ntangomembership1")
 
 # Reference Firestore collection
