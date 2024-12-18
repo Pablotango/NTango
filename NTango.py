@@ -11,9 +11,8 @@ credentials_json = json.loads(st.secrets["google"]["GOOGLE_APPLICATION_CREDENTIA
 # Fix escaped newlines in private_key field
 credentials_json["private_key"] = credentials_json["private_key"].replace("\\n", "\n")
 
-# Create a temporary file to store the credentials JSON
-with tempfile.NamedTemporaryFile(delete=False, suffix=".json", mode="w") as temp_file:
-    json.dump(credentials_json, temp_file, indent=4)  # Save the JSON to the file
+with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as temp_file:
+    json.dump(credentials_json, temp_file)
     temp_credentials_path = temp_file.name
 
 # Set the GOOGLE_APPLICATION_CREDENTIALS environment variable
